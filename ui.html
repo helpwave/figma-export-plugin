@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customizable Variable Export</title>
+    <style>
+        /* Basic Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f4f4f9;
+            padding: 12px 24px;
+        }
+
+        h2 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        p {
+            margin-bottom: 10px;
+            color: #555;
+            text-align: justify;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 4px;
+            display: inline-block;
+            color: #333;
+        }
+
+        select, button {
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        select {
+            background-color: #fff;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Section styling */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-group select {
+            width: 100%;
+            display: inline-block;
+        }
+
+        /* Button container */
+        .button-container {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<p>This plugin works only if referenced values have a single mode transitive to the root value.</p>
+<h2>Export Options</h2>
+
+<div class="form-group">
+    <label for="structure">Variable Structure:</label>
+    <select id="structure">
+        <option value="byStructure">By Structure</option>
+        <option value="flattened">Flattened</option>
+    </select>
+</div>
+
+<div class="form-group">
+    <label for="colors">Color Format:</label>
+    <select id="colors">
+        <option value="hex">Hex</option>
+        <option value="rgb">RGB</option>
+    </select>
+</div>
+
+<div class="button-container">
+    <button id="export">Export</button>
+</div>
+
+<script>
+    document.getElementById("export").onclick = () => {
+        const structure = document.getElementById("structure").value;
+        const colors = document.getElementById("colors").value;
+
+        parent.postMessage({
+            pluginMessage: {
+                type: "export",
+                options: {structure, colors}
+            }
+        }, "*");
+    };
+
+    // Listen for messages from the plugin
+    window.onmessage = (event) => {
+        const message = event.data.pluginMessage;
+        if (message.type === "export-json") {
+            downloadJSON(message.filename, message.data);
+        }
+    };
+
+    // Function to trigger JSON file download
+    function downloadJSON(filename, jsonData) {
+        const blob = new Blob([jsonData], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+</script>
+
+</body>
+</html>
