@@ -2,7 +2,7 @@
   "name": "Customizable Variable Export",
   "id": "1476152039895217035",
   "api": "1.0.0",
-  "main": "code.js",
+  "main": "dist/code.js",
   "capabilities": [],
   "enableProposedApi": false,
   "documentAccess": "dynamic-page",

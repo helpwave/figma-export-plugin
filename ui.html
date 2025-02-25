@@ -84,6 +84,11 @@
         .button-container {
             text-align: center;
         }
+
+        /* Hide elements */
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -92,18 +97,26 @@
 <h2>Export Options</h2>
 
 <div class="form-group">
-    <label for="structure">Variable Structure:</label>
-    <select id="structure">
-        <option value="byStructure">By Structure</option>
-        <option value="flattened">Flattened</option>
+    <label for="language">Export Language:</label>
+    <select id="language">
+        <option value="json">JSON</option>
+        <option value="typescript">TypeScript</option>
     </select>
 </div>
 
-<div class="form-group">
+<div class="form-group" id="structure-group">
+    <label for="structure">Output Structure:</label>
+    <select id="structure">
+        <option value="nested">Nested</option>
+        <option value="flat">Flattened</option>
+    </select>
+</div>
+
+<div class="form-group" id="colors-group">
     <label for="colors">Color Format:</label>
     <select id="colors">
         <option value="hex">Hex</option>
-        <option value="rgb">RGB</option>
+        <option value="rgba">RGB</option>
     </select>
 </div>
 
@@ -112,14 +125,35 @@
 </div>
 
 <script>
+    document.getElementById("language").onchange = () => {
+        const language = document.getElementById("language").value;
+        const structureGroup = document.getElementById("structure-group");
+        const colorsGroup = document.getElementById("colors-group");
+
+        if (language === "typescript") {
+            structureGroup.classList.add("hidden");
+            colorsGroup.classList.add("hidden");
+        } else {
+            structureGroup.classList.remove("hidden");
+            colorsGroup.classList.remove("hidden");
+        }
+    };
+
     document.getElementById("export").onclick = () => {
+        const language = document.getElementById("language").value;
         const structure = document.getElementById("structure").value;
         const colors = document.getElementById("colors").value;
+
+        const options = { language };
+        if (language === "json") {
+            options.structure = structure;
+            options.colors = colors;
+        }
 
         parent.postMessage({
             pluginMessage: {
                 type: "export",
-                options: {structure, colors}
+                options
             }
         }, "*");
     };
@@ -127,14 +161,16 @@
     // Listen for messages from the plugin
     window.onmessage = (event) => {
         const message = event.data.pluginMessage;
-        if (message.type === "export-json") {
-            downloadJSON(message.filename, message.data);
+        if (message.type === "export-file") {
+            console.log("message", message)
+            downloadFile(message.filename, message.data, message.fileType);
         }
     };
 
     // Function to trigger JSON file download
-    function downloadJSON(filename, jsonData) {
-        const blob = new Blob([jsonData], { type: "application/json" });
+    function downloadFile(filename, data, fileType) {
+        const blob = new Blob([data], { type: fileType });
+        console.log("data", data)
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
