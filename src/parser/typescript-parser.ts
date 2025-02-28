@@ -11,13 +11,13 @@ export const exportTypescript = async (_: TypescriptOptions) => {
   }
 
   const colors = flatJson.values.filter(value => value.type === "COLOR")
-    .map(data => `{ name: "${data.name}", value: "${data.value.toString()}" }`).join(",\n  ")
+    .map(data => `{ name: '${data.name}', value: '${data.value.toString()}' }`).join(",\n  ")
   const numbers = flatJson.values.filter(value => value.type === "FLOAT")
-    .map(data => `{ name: "${data.name}", value: ${data.value.toString()} }`).join(",\n  ");
+    .map(data => `{ name: '${data.name}', value: ${data.value.toString()} }`).join(",\n  ");
   const booleans = flatJson.values.filter(value => value.type === "BOOLEAN")
-    .map(data => `{ name: "${data.name}", value: ${data.value ? "true" : "false"} }`).join(",\n  ");
+    .map(data => `{ name: '${data.name}', value: ${data.value ? "true" : "false"} }`).join(",\n  ");
   const strings = flatJson.values.filter(value => value.type === "STRING")
-    .map(data => `{ name: "${data.name}", value: "${data.value.toString()}" }`).join(",\n  ");
+    .map(data => `{ name: '${data.name}', value: '${data.value.toString()}' }`).join(",\n  ");
 
   const template = `const colors: { name: string, value: string }[] = [%c]
 
